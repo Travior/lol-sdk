@@ -55,7 +55,7 @@ func (c *Client) getRateLimiter(routingValue string) *rate.Limiter {
 	if limiter, exists := c.rateLimiters[routingValue]; exists {
 		return limiter
 	}
-	c.rateLimiters[routingValue] = rate.NewLimiter(rate.Limit(c.config.RequestsPerMin/60), c.config.BurstSize)
+	c.rateLimiters[routingValue] = rate.NewLimiter(rate.Limit(float64(c.config.RequestsPerMin)/60.0), 1)
 	c.logger.Info().Str("routing_value", routingValue).Msg("Created new limiter")
 
 	return c.rateLimiters[routingValue]
@@ -199,10 +199,9 @@ func (c *Client) GetMatchTimeline(ctx context.Context, matchID string, region ty
 func (c *Client) GetChallengerLeague(ctx context.Context, queue string, region types.Region) (*types.LeagueList, error) {
 	c.logger.Debug().Str("queue", queue).Str("region", region.ToString()).Msg("Fetching challengers")
 
-	routingValue := getAccountRouting(region)
 	url := fmt.Sprintf("https://%s.api.riotgames.com/lol/league/v4/challengerleagues/by-queue/%s", region.ToString(), queue)
 
-	body, err := c.makeRequest(ctx, url, routingValue)
+	body, err := c.makeRequest(ctx, url, region.ToString())
 	if err != nil {
 		c.logger.Err(err).Str("queue", queue).Str("region", region.ToString()).Msg("Failed to get challenger league")
 		return nil, err
@@ -220,10 +219,9 @@ func (c *Client) GetChallengerLeague(ctx context.Context, queue string, region t
 func (c *Client) GetGrandMasterLeague(ctx context.Context, queue string, region types.Region) (*types.LeagueList, error) {
 	c.logger.Debug().Str("queue", queue).Str("region", region.ToString()).Msg("Fetching grandmasters")
 
-	routingValue := getAccountRouting(region)
 	url := fmt.Sprintf("https://%s.api.riotgames.com/lol/league/v4/grandmasterleagues/by-queue/%s", region.ToString(), queue)
 
-	body, err := c.makeRequest(ctx, url, routingValue)
+	body, err := c.makeRequest(ctx, url, region.ToString())
 	if err != nil {
 		c.logger.Err(err).Str("queue", queue).Str("region", region.ToString()).Msg("Failed to get grandmaster league")
 		return nil, err
@@ -241,10 +239,9 @@ func (c *Client) GetGrandMasterLeague(ctx context.Context, queue string, region 
 func (c *Client) GetMasterLeague(ctx context.Context, queue string, region types.Region) (*types.LeagueList, error) {
 	c.logger.Debug().Str("queue", queue).Str("region", region.ToString()).Msg("Fetching masters")
 
-	routingValue := getAccountRouting(region)
 	url := fmt.Sprintf("https://%s.api.riotgames.com/lol/league/v4/masterleagues/by-queue/%s", region.ToString(), queue)
 
-	body, err := c.makeRequest(ctx, url, routingValue)
+	body, err := c.makeRequest(ctx, url, region.ToString())
 	if err != nil {
 		c.logger.Err(err).Str("queue", queue).Str("region", region.ToString()).Msg("Failed to get master league")
 		return nil, err
@@ -262,10 +259,9 @@ func (c *Client) GetMasterLeague(ctx context.Context, queue string, region types
 func (c *Client) GetLeagueEntries(ctx context.Context, queue string, tier string, division string, region types.Region) ([]types.LeagueEntry, error) {
 	c.logger.Debug().Str("queue", queue).Str("tier", tier).Str("division", division).Str("region", region.ToString()).Msg("Fetching league entries")
 
-	routingValue := getAccountRouting(region)
 	url := fmt.Sprintf("https://%s.api.riotgames.com/lol/league/v4/entries/%s/%s/%s", region.ToString(), queue, tier, division)
 
-	body, err := c.makeRequest(ctx, url, routingValue)
+	body, err := c.makeRequest(ctx, url, region.ToString())
 	if err != nil {
 		c.logger.Err(err).Str("queue", queue).Str("tier", tier).Str("division", division).Str("region", region.ToString()).Msg("Failed to get league entries")
 		return nil, err
