@@ -16,7 +16,7 @@ func setupClient(t *testing.T) *Client {
 		t.Skip("No API Key set")
 	}
 
-	logger := zerolog.New(zerolog.ConsoleWriter{Out: os.Stderr}).
+	logger := zerolog.New(zerolog.NewTestWriter(t)).
 		With().
 		Timestamp().
 		Str("test", t.Name()).
