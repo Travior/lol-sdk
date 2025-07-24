@@ -43,13 +43,13 @@ func (r *Region) UnmarshalText(text []byte) error {
 		*r = JP1
 	case "br1":
 		*r = BR1
-	case "LA1":
+	case "la1":
 		*r = LA1
-	case "LA2":
+	case "la2":
 		*r = LA2
-	case "OC1":
+	case "oc1":
 		*r = OC1
-	case "NA1":
+	case "na1":
 		*r = NA1
 	default:
 		return fmt.Errorf("Unknown region: %s", name)
